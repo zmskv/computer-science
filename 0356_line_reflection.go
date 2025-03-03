@@ -58,7 +58,3 @@ func isSymmetric(points [][2]int) bool {
 
 // асимптотика O(n), где n - количество точек
 // сложность по памяти O(n), где n - количество точек в мапе
-
-func main() {
-	fmt.Println(isSymmetric([][2]int{[2]int{1, 2}, [2]int{0, -3}, [2]int{-1, 2}, [2]int{5, 2}, [2]int{2, 0}, [2]int{4, -3}, [2]int{3, 2}}))
-}
