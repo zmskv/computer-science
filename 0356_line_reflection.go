@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 func isSymmetric(points [][2]int) bool {
 	maxVal := -10000
 	minVal := 10000
