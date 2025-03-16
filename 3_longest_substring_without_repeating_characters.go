@@ -9,7 +9,7 @@ func lengthOfLongestSubstring(s string) int {
 		return 1
 	}
 
-	for rt+1 < len(s)+1 {
+	for rt < len(s) {
 		if _, ok := table[rune(s[rt])]; !ok {
 			table[rune(s[rt])]++
 			rt++
