@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func sortedSquares(nums []int) []int {
 	n := len(nums)

@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func groupAnagrams(strs []string) [][]string {
 	m := make(map[[26]rune][]string)

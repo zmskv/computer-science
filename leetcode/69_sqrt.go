@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func mySqrt(x int) int {
 
@@ -23,3 +23,7 @@ func mySqrt(x int) int {
 	return rt
 
 }
+
+
+// сложность O(log(n)), где n - длина интервала
+// сложность по памяти O(1)

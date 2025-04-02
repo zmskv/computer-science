@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func isSymmetric(points [][2]int) bool {
 	maxVal := -10000

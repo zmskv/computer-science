@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func intervalIntersection(firstList [][]int, secondList [][]int) [][]int {
 	ans := make([][]int, 0)

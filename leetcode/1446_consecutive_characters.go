@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func maxPower(s string) int {
 	mxLength := -1000

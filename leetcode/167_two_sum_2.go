@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func twoSum2(numbers []int, target int) []int {
 	lt, rt := 0, len(numbers)-1

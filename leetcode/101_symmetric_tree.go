@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func isSymmetricTree(root *TreeNode) bool {
 	if root == nil {

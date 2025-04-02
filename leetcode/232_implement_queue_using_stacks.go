@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 type MyQueue struct {
 	stackPush []int

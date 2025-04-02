@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func hasPathSum(root *TreeNode, targetSum int) bool {
 	return preorderSum(root, 0, targetSum)

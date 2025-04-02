@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func searchRange(nums []int, target int) []int {
 	if len(nums) == 0 {

@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func missingNumber(nums []int) int {
 	res := len(nums)

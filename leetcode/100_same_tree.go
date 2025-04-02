@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func isSameTree(p *TreeNode, q *TreeNode) bool {
 	if p == nil || q == nil {

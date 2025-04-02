@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func removeDuplicates(nums []int) int {
 	ans := make([]int, 0)

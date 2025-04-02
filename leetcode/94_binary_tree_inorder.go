@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func inorderTraversal(root *TreeNode) []int {
 	result := make([]int, 0)
@@ -15,7 +15,6 @@ func Traversal(node *TreeNode, result *[]int) {
 	*result = append(*result, node.Val)
 	Traversal(node.Right, result)
 }
-
 
 // сложность O(n), где n - количество вершин
 // сложность по памяти O(h), где h - высота дерева или в худшем случае h == n

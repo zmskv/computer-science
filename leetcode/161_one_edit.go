@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func canReplace(s, t string) bool {
 	cnt := 0

@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func postorderTraversal(root *TreeNode) []int {
 	result := make([]int, 0)

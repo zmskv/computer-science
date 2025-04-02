@@ -1,4 +1,4 @@
-package main
+package leetcode
 
 func longestSubarray(nums []int) int {
 	zeroCnt := 0
