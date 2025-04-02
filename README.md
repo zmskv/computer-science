@@ -1,1 +1,1 @@
-## LeetCode enjoyer!!!!!
+## my way in computer science!
