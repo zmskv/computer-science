@@ -19,7 +19,7 @@ type Action struct {
 	Human
 }
 
-func main() {
+func Example_L1_1() {
 	a := Action{Human: Human{name: "Pasha", age: 20}}
 
 	fmt.Println(a.GetName())
