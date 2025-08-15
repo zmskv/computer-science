@@ -2,7 +2,7 @@ package l1
 
 import "fmt"
 
-func Example_L1_13_XOR() {
+func Example_L1_13() {
 	a := 5
 	b := 7
 
