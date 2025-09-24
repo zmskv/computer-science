@@ -1,4 +1,4 @@
-package main
+package l2
 
 import (
 	"bufio"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func main() {
+func Example_L2_17() {
 	timeout := flag.Duration("timeout", 10*time.Second, "connection timeout (default 10s)")
 	flag.Parse()
 
