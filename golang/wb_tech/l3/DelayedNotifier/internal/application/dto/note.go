@@ -1,6 +1,13 @@
-package entity
+package dto
 
-import "time"
+import (
+	"time"
+)
+
+type Payload struct {
+	Type string `json:"type"`
+	Data Note   `json:"data"`
+}
 
 type Note struct {
 	ID             string
