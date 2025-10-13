@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  postgres-master:
+    image: postgres:18
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_master_data:/var/lib/postgresql/data
+    networks:
+      - shortener-service-network
+
+  postgres-slave:
+    image: postgres:18
+    env_file:
+      - .env
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_slave_data:/var/lib/postgresql/data
+    depends_on:
+      - postgres-master
+    networks:
+      - shortener-service-network
+
+  shortener:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - postgres-master
+      - postgres-slave
+    networks:
+      - shortener-service-network
+
+volumes:
+  postgres_master_data:
+  postgres_slave_data:
+
+networks:
+  shortener-service-network:
+    driver: bridge
