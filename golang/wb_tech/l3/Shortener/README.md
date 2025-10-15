@@ -1,4 +1,4 @@
-# L3.2 DelayedNotifier
+# L3.2 Shortener
 
 Shortener — сервис сокращения URL с аналитикой
 
