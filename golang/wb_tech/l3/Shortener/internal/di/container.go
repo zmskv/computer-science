@@ -11,7 +11,8 @@ import (
 	"github.com/zmskv/computer-science/golang/wb_tech/l3/Shortener/internal/domain/interfaces"
 	conn "github.com/zmskv/computer-science/golang/wb_tech/l3/Shortener/internal/infrastructure/db/postgres"
 	"github.com/zmskv/computer-science/golang/wb_tech/l3/Shortener/internal/infrastructure/repository/postgres"
-	"github.com/zmskv/computer-science/golang/wb_tech/l3/Shortener/internal/logger"
+	"github.com/zmskv/computer-science/golang/wb_tech/l3/Shortener/logger"
+
 	"github.com/zmskv/computer-science/golang/wb_tech/l3/Shortener/internal/presentation"
 	"go.uber.org/zap"
 )
