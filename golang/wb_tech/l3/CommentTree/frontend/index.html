@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CommentTree - Древовидные комментарии</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .search-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+
+        .search-section input {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .search-section button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .search-section button:hover {
+            background: #0056b3;
+        }
+
+        .comments-section {
+            margin-bottom: 30px;
+        }
+
+        .comment {
+            margin: 15px 0;
+            padding: 15px;
+            border-left: 3px solid #007bff;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .comment.reply {
+            margin-left: 40px;
+            border-left-color: #28a745;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .comment-date {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .comment-text {
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-reply, .btn-delete {
+            padding: 5px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-reply {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-reply:hover {
+            background: #218838;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .add-comment-section {
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+
+        .add-comment-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .form-group button:hover {
+            background: #0056b3;
+        }
+
+        .reply-form {
+            margin-top: 10px;
+            padding: 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .reply-form.active {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CommentTree - Древовидные комментарии</h1>
+
+        <div class="search-section">
+            <input type="text" id="searchInput" placeholder="Поиск по комментариям...">
+            <button onclick="searchComments()">Найти</button>
+            <button onclick="clearSearch()" style="background: #6c757d;">Очистить</button>
+        </div>
+
+        <div class="comments-section" id="commentsSection">
+            <div class="loading">Загрузка комментариев...</div>
+        </div>
+
+        <div class="add-comment-section">
+            <h3>Добавить комментарий</h3>
+            <div class="form-group">
+                <label for="authorInput">Автор:</label>
+                <input type="text" id="authorInput" placeholder="Ваше имя">
+            </div>
+            <div class="form-group">
+                <label for="textInput">Текст комментария:</label>
+                <textarea id="textInput" placeholder="Введите ваш комментарий"></textarea>
+            </div>
+            <div class="form-group">
+                <button onclick="addComment()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentParentId = null;
+        let currentSearch = '';
+
+        async function loadComments() {
+            const commentsSection = document.getElementById('commentsSection');
+            commentsSection.innerHTML = '<div class="loading">Загрузка комментариев...</div>';
+
+            try {
+                let url = '/comments';
+                const params = new URLSearchParams();
+                if (currentSearch) {
+                    params.append('search', currentSearch);
+                }
+                if (currentParentId) {
+                    params.append('parent', currentParentId);
+                }
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Ошибка загрузки комментариев');
+                }
+
+                const comments = await response.json();
+                displayComments(comments);
+            } catch (error) {
+                commentsSection.innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
+            }
+        }
+
+        function displayComments(comments) {
+            const commentsSection = document.getElementById('commentsSection');
+            
+            if (comments.length === 0) {
+                commentsSection.innerHTML = '<div class="loading">Комментариев пока нет</div>';
+                return;
+            }
+
+            commentsSection.innerHTML = '';
+            const tree = buildTree(comments);
+            tree.forEach(comment => {
+                commentsSection.appendChild(renderComment(comment, 0));
+            });
+        }
+
+        function buildTree(comments) {
+            const map = new Map();
+            const roots = [];
+
+            comments.forEach(comment => {
+                map.set(comment.id, { ...comment, children: [] });
+            });
+
+            comments.forEach(comment => {
+                const node = map.get(comment.id);
+                if (!comment.parent_id || comment.parent_id === '') {
+                    roots.push(node);
+                } else {
+                    const parent = map.get(comment.parent_id);
+                    if (parent) {
+                        parent.children.push(node);
+                    } else {
+                        roots.push(node);
+                    }
+                }
+            });
+
+            return roots;
+        }
+
+        function renderComment(comment, level) {
+            const div = document.createElement('div');
+            div.className = 'comment';
+            if (level > 0) {
+                div.classList.add('reply');
+            }
+            div.style.marginLeft = (level * 40) + 'px';
+
+            const header = document.createElement('div');
+            header.className = 'comment-header';
+
+            const author = document.createElement('span');
+            author.className = 'comment-author';
+            author.textContent = comment.author || 'Аноним';
+
+            const date = document.createElement('span');
+            date.className = 'comment-date';
+            date.textContent = new Date(comment.date).toLocaleString('ru-RU');
+
+            header.appendChild(author);
+            header.appendChild(date);
+
+            const text = document.createElement('div');
+            text.className = 'comment-text';
+            text.textContent = comment.text;
+
+            const actions = document.createElement('div');
+            actions.className = 'comment-actions';
+
+            const replyBtn = document.createElement('button');
+            replyBtn.className = 'btn-reply';
+            replyBtn.textContent = 'Ответить';
+            replyBtn.onclick = () => toggleReplyForm(comment.id);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn-delete';
+            deleteBtn.textContent = 'Удалить';
+            deleteBtn.onclick = () => deleteComment(comment.id);
+
+            actions.appendChild(replyBtn);
+            actions.appendChild(deleteBtn);
+
+            const replyForm = document.createElement('div');
+            replyForm.id = `reply-form-${comment.id}`;
+            replyForm.className = 'reply-form';
+            replyForm.innerHTML = `
+                <div class="form-group">
+                    <label>Автор:</label>
+                    <input type="text" id="reply-author-${comment.id}" placeholder="Ваше имя">
+                </div>
+                <div class="form-group">
+                    <label>Текст ответа:</label>
+                    <textarea id="reply-text-${comment.id}" placeholder="Введите ваш ответ"></textarea>
+                </div>
+                <div class="form-group">
+                    <button onclick="submitReply('${comment.id}')">Отправить ответ</button>
+                    <button onclick="toggleReplyForm('${comment.id}')" style="background: #6c757d; margin-left: 10px;">Отмена</button>
+                </div>
+            `;
+
+            div.appendChild(header);
+            div.appendChild(text);
+            div.appendChild(actions);
+            div.appendChild(replyForm);
+
+            if (comment.children && comment.children.length > 0) {
+                comment.children.forEach(child => {
+                    div.appendChild(renderComment(child, level + 1));
+                });
+            }
+
+            return div;
+        }
+
+        function toggleReplyForm(commentId) {
+            const form = document.getElementById(`reply-form-${commentId}`);
+            form.classList.toggle('active');
+        }
+
+        async function submitReply(parentId) {
+            const author = document.getElementById(`reply-author-${parentId}`).value;
+            const text = document.getElementById(`reply-text-${parentId}`).value;
+
+            if (!text.trim()) {
+                alert('Введите текст ответа');
+                return;
+            }
+
+            if (!author.trim()) {
+                alert('Введите имя автора');
+                return;
+            }
+
+            try {
+                const response = await fetch('/comments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        parent_id: parentId,
+                        text: text,
+                        author: author
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Ошибка создания ответа');
+                }
+
+                document.getElementById(`reply-author-${parentId}`).value = '';
+                document.getElementById(`reply-text-${parentId}`).value = '';
+                toggleReplyForm(parentId);
+                loadComments();
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        }
+
+        async function addComment() {
+            const author = document.getElementById('authorInput').value;
+            const text = document.getElementById('textInput').value;
+
+            if (!text.trim()) {
+                alert('Введите текст комментария');
+                return;
+            }
+
+            if (!author.trim()) {
+                alert('Введите имя автора');
+                return;
+            }
+
+            try {
+                const response = await fetch('/comments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        author: author
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Ошибка создания комментария');
+                }
+
+                document.getElementById('authorInput').value = '';
+                document.getElementById('textInput').value = '';
+                loadComments();
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        }
+
+        async function deleteComment(id) {
+            if (!confirm('Вы уверены, что хотите удалить этот комментарий и все ответы на него?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/comments/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Ошибка удаления комментария');
+                }
+
+                loadComments();
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        }
+
+        function searchComments() {
+            currentSearch = document.getElementById('searchInput').value.trim();
+            currentParentId = null;
+            loadComments();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            currentSearch = '';
+            currentParentId = null;
+            loadComments();
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchComments();
+            }
+        });
+
+        loadComments();
+    </script>
+</body>
+</html>
