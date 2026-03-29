@@ -1,0 +1,31 @@
+version: '3'
+
+tasks:
+  tidy:
+    cmds:
+      - go mod tidy
+
+  fmt:
+    cmds:
+      - gofmt -w cmd internal logger
+
+  build:
+    deps: [fmt]
+    cmds:
+      - go build ./...
+
+  test:
+    cmds:
+      - go test ./...
+
+  run:
+    cmds:
+      - go run ./cmd/image-processor
+
+  up:
+    cmds:
+      - docker compose up -d --build
+
+  down:
+    cmds:
+      - docker compose down

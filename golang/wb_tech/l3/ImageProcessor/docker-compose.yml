@@ -1,0 +1,47 @@
+services:
+  kafka:
+    image: apache/kafka:4.2.0
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list > /dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: image-processor-app
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      HTTP_HOST: 0.0.0.0
+      HTTP_PORT: 8080
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_TOPIC: image-processing
+      KAFKA_GROUP: image-processor
+      STORAGE_ROOT_DIR: storage
+      WEB_DIR: web
+      PROCESSING_WATERMARK_TEXT: ImageProcessor
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./storage:/app/storage
