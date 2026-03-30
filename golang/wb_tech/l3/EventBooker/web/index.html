@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EventBooker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">EventBooker</p>
+        <h1>Manage events, users, bookings, and Telegram expiry notices in one place</h1>
+        <p class="hero-text">
+          Register multiple users, assign bookings to real accounts, configure a different booking TTL for each event,
+          confirm pending reservations, and watch automatic expiration flow.
+        </p>
+      </div>
+      <div class="hero-panel">
+        <div class="stat">
+          <span class="stat-label">Refresh cadence</span>
+          <span class="stat-value">Every 5 seconds</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Stack</span>
+          <span class="stat-value">Go + WBF + PostgreSQL</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <div class="sidebar-stack">
+        <section class="panel admin-panel">
+          <div class="panel-head">
+            <p class="panel-kicker">Users</p>
+            <h2>Register user</h2>
+          </div>
+
+          <form id="create-user-form" class="form-grid">
+            <label>
+              <span>Name</span>
+              <input name="name" type="text" placeholder="Alice Johnson" required>
+            </label>
+
+            <label>
+              <span>Email</span>
+              <input name="email" type="email" placeholder="alice@example.com" required>
+            </label>
+
+            <label>
+              <span>Telegram chat ID</span>
+              <input name="telegram_chat_id" type="text" placeholder="123456789">
+            </label>
+
+            <button class="primary-button" type="submit">Create user</button>
+          </form>
+
+          <div class="list-head">
+            <h3>Users</h3>
+            <p>Select these users when creating bookings.</p>
+          </div>
+          <div id="users-container" class="user-list"></div>
+        </section>
+
+        <section class="panel admin-panel">
+          <div class="panel-head">
+            <p class="panel-kicker">Events</p>
+            <h2>Create event</h2>
+          </div>
+
+          <form id="create-event-form" class="form-grid">
+            <label>
+              <span>Name</span>
+              <input name="name" type="text" placeholder="Go Meetup Moscow" required>
+            </label>
+
+            <label>
+              <span>Start time</span>
+              <input name="starts_at" type="datetime-local" required>
+            </label>
+
+            <label>
+              <span>Capacity</span>
+              <input name="capacity" type="number" min="1" value="20" required>
+            </label>
+
+            <label>
+              <span>Booking TTL, minutes</span>
+              <input name="booking_ttl_minutes" type="number" min="0" value="15" required>
+            </label>
+
+            <label class="checkbox-field">
+              <input name="requires_confirmation" type="checkbox" checked>
+              <span>Require confirmation before the seat becomes final</span>
+            </label>
+
+            <button class="primary-button" type="submit">Create event</button>
+          </form>
+        </section>
+      </div>
+
+      <section class="panel feed-panel">
+        <div class="panel-head">
+          <p class="panel-kicker">Feed</p>
+          <h2>Events and active bookings</h2>
+        </div>
+
+        <div id="status-banner" class="status-banner hidden"></div>
+        <div id="events-container" class="cards"></div>
+      </section>
+    </main>
+  </div>
+
+  <template id="event-card-template">
+    <article class="event-card">
+      <div class="event-topline">
+        <div>
+          <h3 class="event-title"></h3>
+          <p class="event-date"></p>
+        </div>
+        <span class="event-badge"></span>
+      </div>
+
+      <div class="metrics"></div>
+
+      <div class="event-columns">
+        <section class="subpanel">
+          <div class="subpanel-head">
+            <h4>Create booking</h4>
+            <p>Choose a registered user for this event.</p>
+          </div>
+
+          <form class="booking-form">
+            <label>
+              <span>User</span>
+              <select name="user_id" required></select>
+            </label>
+
+            <p class="control-note">Pending bookings expire automatically after the event TTL if not confirmed.</p>
+
+            <button class="secondary-button" type="submit">Book seat</button>
+          </form>
+        </section>
+
+        <section class="subpanel">
+          <div class="subpanel-head">
+            <h4>Active bookings</h4>
+            <p>Admin view with current seat state.</p>
+          </div>
+
+          <div class="bookings"></div>
+        </section>
+      </div>
+    </article>
+  </template>
+
+  <script src="/app.js"></script>
+</body>
+</html>

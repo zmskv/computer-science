@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: eventbooker-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  migrations:
+    image: migrate/migrate:v4.18.3
+    container_name: eventbooker-migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./migrations:/migrations:ro
+    command:
+      [
+        "-path=/migrations",
+        "-database=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_DOCKER_HOST}:${POSTGRES_DOCKER_PORT}/${POSTGRES_DB}?sslmode=${POSTGRES_SSLMODE}",
+        "up"
+      ]
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eventbooker-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    environment:
+      HTTP_HOST: ${HTTP_HOST}
+      HTTP_PORT: ${HTTP_PORT}
+      POSTGRES_HOST: ${POSTGRES_DOCKER_HOST}
+      POSTGRES_PORT: ${POSTGRES_DOCKER_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SSLMODE: ${POSTGRES_SSLMODE}
+      POSTGRES_SLAVE_DSNS: ${POSTGRES_SLAVE_DSNS}
+      POSTGRES_MAX_OPEN_CONNS: ${POSTGRES_MAX_OPEN_CONNS}
+      POSTGRES_MAX_IDLE_CONNS: ${POSTGRES_MAX_IDLE_CONNS}
+      POSTGRES_CONN_MAX_LIFETIME_SECONDS: ${POSTGRES_CONN_MAX_LIFETIME_SECONDS}
+      WEB_DIR: /app/web
+      EXPIRATION_CHECK_INTERVAL_SECONDS: ${EXPIRATION_CHECK_INTERVAL_SECONDS}
+      DEFAULT_BOOKING_TTL_MINUTES: ${DEFAULT_BOOKING_TTL_MINUTES}
+      TELEGRAM_ENABLED: ${TELEGRAM_ENABLED}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_BASE_URL: ${TELEGRAM_BASE_URL}
+    ports:
+      - "${HTTP_PORT}:8080"
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
