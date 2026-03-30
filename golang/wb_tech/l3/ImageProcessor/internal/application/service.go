@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/application/dto"
 	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/domain/entity"
 	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/domain/interfaces"
 	"go.uber.org/zap"
@@ -51,16 +50,16 @@ func NewImageService(
 	}
 }
 
-func (s *imageService) Upload(ctx context.Context, input dto.UploadImageInput) (entity.Image, error) {
-	if len(input.Data) == 0 {
+func (s *imageService) Upload(ctx context.Context, filename string, data []byte) (entity.Image, error) {
+	if len(data) == 0 {
 		return entity.Image{}, errors.New("image file is empty")
 	}
 
-	if s.maxUploadSizeBytes > 0 && int64(len(input.Data)) > s.maxUploadSizeBytes {
+	if s.maxUploadSizeBytes > 0 && int64(len(data)) > s.maxUploadSizeBytes {
 		return entity.Image{}, fmt.Errorf("image exceeds %d MB limit", s.maxUploadSizeBytes/(1024*1024))
 	}
 
-	format, err := detectImageFormat(input.Data)
+	format, err := detectImageFormat(data)
 	if err != nil {
 		return entity.Image{}, err
 	}
@@ -68,14 +67,14 @@ func (s *imageService) Upload(ctx context.Context, input dto.UploadImageInput) (
 	now := time.Now().UTC()
 	imageID := uuid.NewString()
 
-	originalPath, err := s.storage.SaveOriginal(ctx, imageID, format, input.Data)
+	originalPath, err := s.storage.SaveOriginal(ctx, imageID, format, data)
 	if err != nil {
 		return entity.Image{}, fmt.Errorf("save original image: %w", err)
 	}
 
 	imageMeta := entity.Image{
 		ID:               imageID,
-		OriginalFilename: filepath.Base(input.Filename),
+		OriginalFilename: filepath.Base(filename),
 		Format:           format,
 		Status:           entity.StatusQueued,
 		OriginalPath:     originalPath,
@@ -88,7 +87,7 @@ func (s *imageService) Upload(ctx context.Context, input dto.UploadImageInput) (
 		return entity.Image{}, fmt.Errorf("save image metadata: %w", err)
 	}
 
-	if err := s.publisher.Publish(ctx, dto.ImageJob{ImageID: imageID}); err != nil {
+	if err := s.publisher.Publish(ctx, imageID); err != nil {
 		_ = s.storage.Delete(ctx, originalPath)
 		_ = s.images.Delete(ctx, imageID)
 		return entity.Image{}, fmt.Errorf("enqueue image processing: %w", err)

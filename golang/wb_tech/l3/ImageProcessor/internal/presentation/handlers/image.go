@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/wb-go/wbf/ginext"
-	appdto "github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/application/dto"
 	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/domain/entity"
 	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/domain/interfaces"
 	presentationdto "github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/presentation/dto"
@@ -60,10 +59,7 @@ func (h *Handler) Upload(c *ginext.Context) {
 		return
 	}
 
-	imageMeta, err := h.service.Upload(c.Request.Context(), appdto.UploadImageInput{
-		Filename: header.Filename,
-		Data:     data,
-	})
+	imageMeta, err := h.service.Upload(c.Request.Context(), header.Filename, data)
 	if err != nil {
 		h.logger.Error("failed to upload image", zap.Error(err))
 		c.JSON(http.StatusBadRequest, ginext.H{"error": err.Error()})

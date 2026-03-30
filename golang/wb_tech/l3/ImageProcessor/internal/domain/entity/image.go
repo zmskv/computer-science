@@ -30,3 +30,9 @@ type ProcessingOptions struct {
 	ThumbnailSize int
 	WatermarkText string
 }
+
+type ProcessedImage struct {
+	Processed []byte
+	Thumbnail []byte
+	Format    string
+}

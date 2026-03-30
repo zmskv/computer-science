@@ -5,7 +5,6 @@ import (
 	"errors"
 	"os"
 
-	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/application/dto"
 	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/domain/interfaces"
 	"go.uber.org/zap"
 )
@@ -27,25 +26,25 @@ func NewImageWorker(service interfaces.ImageService, consumer interfaces.ImageJo
 func (w *ImageWorker) Run(ctx context.Context) error {
 	w.logger.Info("Image worker started")
 
-	err := w.consumer.Consume(ctx, func(ctx context.Context, job dto.ImageJob) error {
-		if job.ImageID == "" {
+	err := w.consumer.Consume(ctx, func(ctx context.Context, imageID string) error {
+		if imageID == "" {
 			w.logger.Warn("skipping empty image job")
 			return nil
 		}
 
-		w.logger.Info("processing image job", zap.String("image_id", job.ImageID))
+		w.logger.Info("processing image job", zap.String("image_id", imageID))
 
-		if err := w.service.Process(ctx, job.ImageID); err != nil {
+		if err := w.service.Process(ctx, imageID); err != nil {
 			if errors.Is(err, os.ErrNotExist) {
-				w.logger.Warn("image not found for job", zap.String("image_id", job.ImageID))
+				w.logger.Warn("image not found for job", zap.String("image_id", imageID))
 				return nil
 			}
 
-			w.logger.Error("image processing failed", zap.String("image_id", job.ImageID), zap.Error(err))
+			w.logger.Error("image processing failed", zap.String("image_id", imageID), zap.Error(err))
 			return err
 		}
 
-		w.logger.Info("image job completed", zap.String("image_id", job.ImageID))
+		w.logger.Info("image job completed", zap.String("image_id", imageID))
 		return nil
 	})
 

@@ -6,8 +6,11 @@ import (
 
 	wbfkafka "github.com/wb-go/wbf/kafka"
 	"github.com/wb-go/wbf/retry"
-	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/application/dto"
 )
+
+type imageJobMessage struct {
+	ImageID string `json:"image_id"`
+}
 
 type Publisher struct {
 	producer *wbfkafka.Producer
@@ -21,11 +24,11 @@ func NewPublisher(brokers []string, topic string, strategy retry.Strategy) *Publ
 	}
 }
 
-func (p *Publisher) Publish(ctx context.Context, job dto.ImageJob) error {
-	payload, err := json.Marshal(job)
+func (p *Publisher) Publish(ctx context.Context, imageID string) error {
+	payload, err := json.Marshal(imageJobMessage{ImageID: imageID})
 	if err != nil {
 		return err
 	}
 
-	return p.producer.SendWithRetry(ctx, p.strategy, []byte(job.ImageID), payload)
+	return p.producer.SendWithRetry(ctx, p.strategy, []byte(imageID), payload)
 }

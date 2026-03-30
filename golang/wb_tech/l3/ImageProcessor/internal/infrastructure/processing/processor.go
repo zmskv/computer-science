@@ -12,7 +12,6 @@ import (
 	"image/png"
 	"math"
 
-	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/application/dto"
 	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/domain/entity"
 	"go.uber.org/zap"
 	"golang.org/x/image/draw"
@@ -34,14 +33,14 @@ func (p *Processor) Process(
 	source []byte,
 	format string,
 	options entity.ProcessingOptions,
-) (dto.ProcessedImage, error) {
+) (entity.ProcessedImage, error) {
 	if err := ctx.Err(); err != nil {
-		return dto.ProcessedImage{}, err
+		return entity.ProcessedImage{}, err
 	}
 
 	img, detectedFormat, err := image.Decode(bytes.NewReader(source))
 	if err != nil {
-		return dto.ProcessedImage{}, fmt.Errorf("decode image: %w", err)
+		return entity.ProcessedImage{}, fmt.Errorf("decode image: %w", err)
 	}
 
 	if format == "" {
@@ -54,17 +53,17 @@ func (p *Processor) Process(
 
 	processedBytes, err := encodeImage(watermarked, format)
 	if err != nil {
-		return dto.ProcessedImage{}, fmt.Errorf("encode processed image: %w", err)
+		return entity.ProcessedImage{}, fmt.Errorf("encode processed image: %w", err)
 	}
 
 	thumbnailBytes, err := encodeImage(thumbnail, format)
 	if err != nil {
-		return dto.ProcessedImage{}, fmt.Errorf("encode thumbnail image: %w", err)
+		return entity.ProcessedImage{}, fmt.Errorf("encode thumbnail image: %w", err)
 	}
 
 	p.logger.Debug("image processed", zap.String("format", format))
 
-	return dto.ProcessedImage{
+	return entity.ProcessedImage{
 		Processed: processedBytes,
 		Thumbnail: thumbnailBytes,
 		Format:    format,

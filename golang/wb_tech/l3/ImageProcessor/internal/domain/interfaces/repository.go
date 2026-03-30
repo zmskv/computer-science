@@ -3,7 +3,6 @@ package interfaces
 import (
 	"context"
 
-	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/application/dto"
 	"github.com/zmskv/computer-science/golang/wb_tech/l3/ImageProcessor/internal/domain/entity"
 )
 
@@ -23,13 +22,13 @@ type ImageStorage interface {
 }
 
 type ImageProcessor interface {
-	Process(ctx context.Context, source []byte, format string, options entity.ProcessingOptions) (dto.ProcessedImage, error)
+	Process(ctx context.Context, source []byte, format string, options entity.ProcessingOptions) (entity.ProcessedImage, error)
 }
 
 type ImageJobPublisher interface {
-	Publish(ctx context.Context, job dto.ImageJob) error
+	Publish(ctx context.Context, imageID string) error
 }
 
 type ImageJobConsumer interface {
-	Consume(ctx context.Context, handler func(context.Context, dto.ImageJob) error) error
+	Consume(ctx context.Context, handler func(context.Context, string) error) error
 }
