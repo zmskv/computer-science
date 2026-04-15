@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SalesTracker</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="page">
+    <section class="header">
+      <div>
+        <p class="caption">SalesTracker</p>
+        <h1>Учет записей и аналитика</h1>
+        <p class="subtitle">
+          Добавляйте доходы и расходы, фильтруйте записи, смотрите агрегаты за период и при необходимости выгружайте CSV.
+        </p>
+      </div>
+    </section>
+
+    <section class="layout">
+      <article class="card">
+        <div class="card-head">
+          <h2 id="form-title">Новая запись</h2>
+          <button id="reset-form" class="button button-secondary" type="button">Сбросить</button>
+        </div>
+
+        <form id="item-form" class="form-grid">
+          <label>
+            Тип
+            <select name="type" required>
+              <option value="income">Доход</option>
+              <option value="expense">Расход</option>
+            </select>
+          </label>
+
+          <label>
+            Сумма
+            <input name="amount" type="number" min="0" step="0.01" required>
+          </label>
+
+          <label>
+            Категория
+            <input name="category" type="text" maxlength="120" placeholder="Например: продажи, маркетинг" required>
+          </label>
+
+          <label>
+            Дата и время
+            <input name="occurred_at" type="datetime-local" required>
+          </label>
+
+          <label class="full-width">
+            Описание
+            <textarea name="description" rows="4" maxlength="500" placeholder="Необязательно"></textarea>
+          </label>
+
+          <div class="actions full-width">
+            <button id="submit-button" class="button button-primary" type="submit">Сохранить</button>
+          </div>
+        </form>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Фильтры</h2>
+          <button id="export-csv" class="button button-secondary" type="button">Скачать CSV</button>
+        </div>
+
+        <form id="filters-form" class="form-grid">
+          <label>
+            От
+            <input name="from" type="date">
+          </label>
+
+          <label>
+            До
+            <input name="to" type="date">
+          </label>
+
+          <label>
+            Тип
+            <select name="type">
+              <option value="">Все</option>
+              <option value="income">Доход</option>
+              <option value="expense">Расход</option>
+            </select>
+          </label>
+
+          <label>
+            Категория
+            <input name="category" type="text" placeholder="Любая">
+          </label>
+
+          <label>
+            Сортировка
+            <select name="sort_by">
+              <option value="occurred_at">По дате операции</option>
+              <option value="amount">По сумме</option>
+              <option value="category">По категории</option>
+              <option value="type">По типу</option>
+              <option value="created_at">По дате создания</option>
+            </select>
+          </label>
+
+          <label>
+            Порядок
+            <select name="sort_order">
+              <option value="desc">По убыванию</option>
+              <option value="asc">По возрастанию</option>
+            </select>
+          </label>
+
+          <label class="full-width">
+            Группировать аналитику
+            <select name="group_by">
+              <option value="day">По дням</option>
+              <option value="week">По неделям</option>
+              <option value="month">По месяцам</option>
+              <option value="category">По категориям</option>
+            </select>
+          </label>
+
+          <div class="actions full-width">
+            <button class="button button-primary" type="submit">Применить</button>
+          </div>
+        </form>
+      </article>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Аналитика</h2>
+        <p id="status" class="status">Загрузка данных...</p>
+      </div>
+
+      <div id="summary-cards" class="summary-grid"></div>
+
+      <div class="chart-wrap">
+        <div id="chart" class="chart"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Записи</h2>
+        <span id="records-count" class="records-count">0 строк</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Тип</th>
+              <th>Сумма</th>
+              <th>Категория</th>
+              <th>Описание</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody id="items-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

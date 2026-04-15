@@ -1,0 +1,70 @@
+version: "3"
+
+dotenv: [".env"]
+
+env:
+  APP_CMD: "./cmd/sales-tracker"
+
+tasks:
+  tidy:
+    desc: Update go.mod and go.sum
+    cmds:
+      - go mod tidy
+
+  fmt:
+    desc: Format Go sources
+    cmds:
+      - gofmt -w cmd internal logger
+
+  build:
+    desc: Build the application
+    deps: [fmt]
+    cmds:
+      - go build ./...
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test ./...
+
+  check:
+    desc: Run formatting, build, and tests
+    deps: [fmt]
+    cmds:
+      - go build ./...
+      - go test ./...
+
+  run:
+    desc: Run the application locally
+    cmds:
+      - go run {{.APP_CMD}}
+
+  postgres-up:
+    desc: Start only PostgreSQL
+    cmds:
+      - docker compose up -d postgres
+
+  migrate-up:
+    desc: Apply root migrations in Docker
+    cmds:
+      - docker compose up migrations
+
+  migrate-down:
+    desc: Roll back the latest root migration in Docker
+    cmds:
+      - docker compose run --rm migrations down 1
+
+  up:
+    desc: Start the full Docker stack
+    cmds:
+      - docker compose up -d --build
+
+  down:
+    desc: Stop the Docker stack
+    cmds:
+      - docker compose down
+
+  logs:
+    desc: Follow application logs
+    cmds:
+      - docker compose logs -f app
