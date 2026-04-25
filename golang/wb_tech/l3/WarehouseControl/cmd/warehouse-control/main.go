@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/zmskv/computer-science/golang/wb_tech/l3/WarehouseControl/internal/di"
 	"go.uber.org/zap"
 )
 
